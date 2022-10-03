@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration status="INFO">
+    <Filters>
+        <RegexFilter regex=".*ClickHouseConnectionImpl.*" onMatch="DENY" onMismatch="NEUTRAL"/>
+        <RegexFilter regex=".*JdbcDatabaseManager.*" onMatch="DENY" onMismatch="NEUTRAL"/>
+    </Filters>
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"/>
+        </Console>
+        <!-- JDBCAppender -->
+        <JDBC name="jdbc" tableName="ods_uas_log_info_f">
+            <ConnectionFactory class="org.example.ConnectionFactory" method="getDatabaseConnection"/>
+            <Column name="level" pattern="%level"/>
+            <Column name="thread" pattern="%t"/>
+            <Column name="class" pattern="%class"/>
+            <Column name="message" pattern="%message"/>
+            <Column name="line" pattern="%L"/>
+            <Column name="code" pattern="%X{code}"/>
+            <Column name="runtime" pattern="%r"/>
+            <Column name="describe" pattern="%X{describe}"/>
+            <Column name="insert_time" pattern="%d{yyyy-MM-dd HH:mm:ss.SSS}"/>
+        </JDBC>
+    </Appenders>
+    <Loggers>
+        <Logger name="myspark.warehouse" level="info">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="jdbc"/>
+        </Logger>
+        <Logger name="org.apache.logging" level="error">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="jdbc"/>
+        </Logger>
+        <Logger name="org.slf4j" level="error">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="jdbc"/>
+        </Logger>
+        <Root level="error" additivity="false">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="jdbc"/>
+        </Root>
+    </Loggers>
+</Configuration>
